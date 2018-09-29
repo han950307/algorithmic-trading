@@ -8,3 +8,10 @@ class Algorithm(ABC):
 	we can pass in a trading algorithm as an argument and it would be
 	swappable.
 	"""
+	pass
+
+
+class SimpleAlgorithm(Algorithm):
+	"""
+	Very basic algorithm for trading stock.
+	"""
