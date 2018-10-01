@@ -40,15 +40,18 @@ class Broker(ABC):
         """
         Given a ticker, returns the current market price.
         """
-        stock = self.stock_flyweight(ticker)
+        stock = self.stock_flyweight.get(ticker)
         return stock.get_current_price()
 
     def get_historical_price(self, ticker, timestamp):
         """
         Given a ticker, returns the historical price at the timestamp.
         """
-        stock = self.stock_flyweight(ticker)
+        stock = self.stock_flyweight.get(ticker)
         return stock.get_historical_price(timestamp)
+
+    def get_random_stock(self):
+        return self.stock_flyweight.get_random_stocks()[0]
 
 
 class SimulatedBroker(Broker):
@@ -105,7 +108,7 @@ class SimulatedBroker(Broker):
                 return self.history[timestamp]
             else:
                 ct = 0
-                while timestamp not in self.history or ct < 14400:
+                while timestamp not in self.history and ct < 14400:
                     # Get the last timestamp on record
                     timestamp = timestamp + datetime.timedelta(minutes=-1)
                     ct += 1
@@ -126,9 +129,8 @@ class SimulatedBroker(Broker):
                 self.timestamp = None
                 self.current_price = None
 
-
-    def __init__(self, user):
-        super().__init__(user)
+    def __init__(self):
+        super().__init__()
         data_folder = '/home/hansung/algorithmic-trading/data/historical/Stocks'
         self.stock_flyweight = StockFlyweight()
 
@@ -142,3 +144,23 @@ class SimulatedBroker(Broker):
             if ct % 50 == 0:
                 print(ct)
                 break
+
+    def set_day(self, timestamp):
+        for stock in self.stock_flyweight:
+            stock.revert_price_to(timestamp)
+
+    def buy(self, ticker, quantity):
+        # Haha, simulated buying
+        stock = self.stock_flyweight.get(ticker)
+        return {
+            'money': stock.get_current_price() * quantity,
+            'status': True
+        }
+
+    def sell(self, ticker, quantity):
+        # also, haha simulated selling
+        stock = self.stock_flyweight.get(ticker)
+        return {
+            'money': stock.get_current_price() * quantity,
+            'status': 'sold'
+        }

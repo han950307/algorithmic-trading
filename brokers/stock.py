@@ -1,3 +1,8 @@
+from abc import ABC
+from abc import abstractmethod
+import random
+
+
 class Stock(ABC):
     @abstractmethod
     def get_ticker(self):
@@ -8,9 +13,10 @@ class Stock(ABC):
         """
         Get the price at this time.
         """
+        pass
 
-  	def get_current_price(self):
-  		return self.current_price
+    def get_current_price(self):
+        return self.current_price
 
     def __init__(self):
         """
@@ -31,6 +37,9 @@ class StockFlyweight(ABC):
     """
     def __init__(self):
         self.stock_dict = {}
+
+    def __iter__(self):
+        return iter(self.stock_dict.values())
 
     def add(self, stock):
         """
@@ -61,3 +70,10 @@ class StockFlyweight(ABC):
         if ticker not in self.stock_dict:
             raise AttributeError('Ticker "{}" is not in this flyweight!'.format(ticker))
         return self.stock_dict[ticker]
+
+    def get_random_stocks(self, quantity=1):
+        """
+        Returns random stocks
+        """
+        keys = random.sample(self.stock_dict.keys(), quantity)
+        return [self.get(key) for key in keys]
